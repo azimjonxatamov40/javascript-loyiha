@@ -1,0 +1,75 @@
+import {closeModel, openModal} from './modal'
+
+function forms(formSelector, modalContentSelector, modalSelector) {
+  const form = document.querySelector(formSelector),
+    telegramTokenBot = "8059498214:AAFZmBdQvv1TTURAY2y3NtVpmzQ0_y-xSiw",
+    chatId = "5201044429";
+  const message = {
+    leading: "Loading...",
+    success: "Thanks for contacting with us",
+    failure: "Something went wrong",
+  };
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const loader = document.createElement("div");
+    loader.classList.add("loader");
+    loader.style.width = "50px";
+    loader.style.height = "50px";
+    loader.style.marginTop = "20px";
+    form.append(loader);
+
+    const formData = new FormData(form);
+
+    const object = {};
+    formData.forEach((value, key) => {
+      object[key] = value;
+    });
+
+    fetch(`https://api.telegram.org/bot${telegramTokenBot}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: `
+         Name:${object.name}. Phone: ${object.phone} `,
+      }),
+    })
+      .then(() => {
+        showStatusMessage(message.success);
+        form.reset();
+      })
+      .catch(() => {
+        showStatusMessage(message.failure);
+      })
+      .finally(() => loader.remove());
+  });
+
+  function showStatusMessage(message) {
+    const modalDialog = document.querySelector(".modal__dialog");
+
+    modalDialog.classList.add("hide");
+    openModal(modalContentSelector, modalSelector);
+
+    const statusModal = document.createElement("div");
+    statusModal.classList.add("modal__dialog");
+    statusModal.innerHTML = `
+    <div class="modal__content">
+        <div data-modal-close class="modal__close">x</div>
+         <div class="modal__title">
+            ${message}
+          </div>
+    </div>
+    `;
+
+    document.querySelector(".modal").append(statusModal);
+
+    setTimeout(() => {
+      statusModal.remove();
+      modalDialog.classList.remove("hide");
+      closeModel();
+    }, 4000);
+  }
+}
+
+export default forms;
