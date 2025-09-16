@@ -1,6 +1,6 @@
 import {closeModel, openModal} from './modal'
 
-function forms(formSelector, modalContentSelector, modalSelector) {
+function forms(formSelector, modalTimerId) {
   const form = document.querySelector(formSelector),
     telegramTokenBot = "8059498214:AAFZmBdQvv1TTURAY2y3NtVpmzQ0_y-xSiw",
     chatId = "5201044429";
@@ -49,7 +49,7 @@ function forms(formSelector, modalContentSelector, modalSelector) {
     const modalDialog = document.querySelector(".modal__dialog");
 
     modalDialog.classList.add("hide");
-    openModal(modalContentSelector, modalSelector);
+    openModal('.modal__content', '.modal',modalTimerId);
 
     const statusModal = document.createElement("div");
     statusModal.classList.add("modal__dialog");
@@ -67,7 +67,7 @@ function forms(formSelector, modalContentSelector, modalSelector) {
     setTimeout(() => {
       statusModal.remove();
       modalDialog.classList.remove("hide");
-      closeModel();
+      closeModel('modal');
     }, 4000);
   }
 }

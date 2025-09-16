@@ -1,11 +1,13 @@
-function openModal(modalContentSelector, modalSelector) {
+function openModal(modalContentSelector, modalSelector, modalTimerId) {
   const modalContent = document.querySelector(modalContentSelector);
    modal = document.querySelector(modalSelector),
   modalContent.classList.add("model_fade");
   modal.classList.add("show");
   modal.classList.remove("hide");
   document.body.style.overflow = "hidden";
-  clearInterval(modalTimerId);
+  if(modalTimerId){
+    clearInterval(modalTimerId);
+  }
 }
 
 function closeModel(modalSelector) {
@@ -15,13 +17,13 @@ function closeModel(modalSelector) {
   document.body.style.overflow = "";
 }
 
-function modal(btnSelector, modalSelector, modalContentSelector) {
+function modal(btnSelector, modalSelector, modalContentSelector, modalTimerId) {
   const modelOpneBtns = document.querySelectorAll(btnSelector),
     modal = document.querySelector(modalSelector),
     modalDialog = document.querySelector(".modal__dialog");
 
   modelOpneBtns.forEach((btn) => {
-    btn.addEventListener("click", () => openModal(modalContentSelector, modalSelector));
+    btn.addEventListener("click", () => openModal(modalContentSelector, modalSelector, modalTimerId));
   });
 
   modal.addEventListener("click", (event) => {
@@ -42,7 +44,7 @@ function modal(btnSelector, modalSelector, modalContentSelector) {
       }
     })
 
-  const modalTimerId = setTimeout(openModal, 50000);
+ 
 }
 
 export default modal;
