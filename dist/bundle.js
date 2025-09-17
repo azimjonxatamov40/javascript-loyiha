@@ -2,78 +2,18 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./modules/class.js":
-/*!**************************!*\
-  !*** ./modules/class.js ***!
-  \**************************/
+/***/ "./modules/class-item.js":
+/*!*******************************!*\
+  !*** ./modules/class-item.js ***!
+  \*******************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-function classCard(selector){
-class OfferMenu {
-    constructor(src, alt, title, descr, discount, sale, parentSelector) {
-      this.src = src;
-      this.alt = alt;
-      this.title = title;
-      this.descr = descr;
-      this.discount = discount;
-      this.sale = sale;
-      this.parent = document.querySelector(parentSelector);
-      this.formatToUSD();
-    }
-
-    formatToUSD() {
-      this.discount = this.discount.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-      this.sale = this.sale.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    }
-
-    render() {
-      const element = document.createElement("div");
-      element.innerHTML = `
-            <img src="${this.src}" alt="${this.alt}">
-            <div>
-              <h3>${this.title}</h3>
-              <p>${this.descr}</p>
-              <p><del>${this.discount}</del> <span class="primary-text">${this.sale}</span></p>
-            </div>
-          
-      `;
-
-      this.parent.append(element);
-    }
-  }
-
-  fetch("http://localhost:3000/offers", {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      data.forEach((offer) => {
-        const { src, alt, title, descr, discount, sale } = offer;
-        new OfferMenu(
-          src,
-          alt,
-          title,
-          descr,
-          discount,
-          sale,
-          ".offers-items"
-        ).render();
-      });
-    });
-  
-
-  class DayTime {
+function classItem(selector){
+    class DayTime {
     constructor(src, alt, title, time, secondSelector) {
       this.src = src;
       this.alt = alt;
@@ -125,9 +65,88 @@ class OfferMenu {
   ];
 
   daytime.forEach((daytimeitem) => {
-    const { src, alt, title, time } = daytimeitem;
+    const { src, alt, title, time, } = daytimeitem;
     new DayTime(src, alt, title, time, selector).render();
   });
+
+}
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (classItem);
+
+/***/ }),
+
+/***/ "./modules/class.js":
+/*!**************************!*\
+  !*** ./modules/class.js ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _services_get_resources__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/get-resources */ "./services/get-resources.js");
+
+
+function classCard(selector){
+class OfferMenu {
+    constructor(src, alt, title, descr, discount, sale, parentSelector) {
+      this.src = src;
+      this.alt = alt;
+      this.title = title;
+      this.descr = descr;
+      this.discount = discount;
+      this.sale = sale;
+      this.parent = document.querySelector(parentSelector);
+      this.formatToUSD();
+    }
+
+    formatToUSD() {
+      this.discount = this.discount.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+      this.sale = this.sale.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    }
+
+    render() {
+      const element = document.createElement("div");
+      element.innerHTML = `
+            <img src="${this.src}" alt="${this.alt}">
+            <div>
+              <h3>${this.title}</h3>
+              <p>${this.descr}</p>
+              <p><del>${this.discount}</del> <span class="primary-text">${this.sale}</span></p>
+            </div>
+          
+      `;
+
+      this.parent.append(element);
+    }
+  }
+
+  (0,_services_get_resources__WEBPACK_IMPORTED_MODULE_0__["default"])().then((data) => {
+      data.forEach((offer) => {
+        const { src, alt, title, descr, discount, sale,  } = offer;
+        new OfferMenu(
+          src,
+          alt,
+          title,
+          descr,
+          discount,
+          sale,
+          selector
+        ).render()
+      })
+    })
+
+
+
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (classCard);
@@ -173,30 +192,37 @@ function forms(formSelector, modalTimerId) {
       object[key] = value;
     });
 
-    fetch(`https://api.telegram.org/bot${telegramTokenBot}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: `
-         Name:${object.name}. Phone: ${object.phone} `,
-      }),
-    })
-      .then(() => {
-        showStatusMessage(message.success);
-        form.reset();
-      })
-      .catch(() => {
-        showStatusMessage(message.failure);
-      })
-      .finally(() => loader.remove());
+   sendMessage(loader, object)
   });
+
+  async function sendMessage(loader, object) {
+    try {
+      const response = await fetch(
+        `https://api.tt${telegramTokenBot}/sendMessage`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: `
+         Name:${object.name}. Phone: ${object.phone} `,
+          }),
+        }
+      )
+      showStatusMessage(message.success)
+    } catch {
+     showStatusMessage(message.failure);
+    }finally{
+      loader.remove()
+      form.reset()
+    }
+  }
 
   function showStatusMessage(message) {
     const modalDialog = document.querySelector(".modal__dialog");
 
     modalDialog.classList.add("hide");
-    (0,_modal__WEBPACK_IMPORTED_MODULE_0__.openModal)('.modal__content', '.modal',modalTimerId);
+    (0,_modal__WEBPACK_IMPORTED_MODULE_0__.openModal)(".modal__content", ".modal", modalTimerId);
 
     const statusModal = document.createElement("div");
     statusModal.classList.add("modal__dialog");
@@ -214,7 +240,7 @@ function forms(formSelector, modalTimerId) {
     setTimeout(() => {
       statusModal.remove();
       modalDialog.classList.remove("hide");
-      (0,_modal__WEBPACK_IMPORTED_MODULE_0__.closeModel)('modal');
+      (0,_modal__WEBPACK_IMPORTED_MODULE_0__.closeModel)("modal");
     }, 4000);
   }
 }
@@ -535,6 +561,34 @@ function timer(deadline, selector) {
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (timer);
 
+/***/ }),
+
+/***/ "./services/get-resources.js":
+/*!***********************************!*\
+  !*** ./services/get-resources.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+async function getResources() {
+  //response jovob // await kutib turadi
+  try {
+    const response = await fetch("http://localhost:3000/offers");
+    return await response.json();
+  } catch (e) {
+    console.log('Error');
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getResources);
+
+// sync masalan restarndi olib qarasek afitsiya bitta faqat qaridi
+// async restarnda afitsiya uch torda mijozlarga qaridi
+
+
 /***/ })
 
 /******/ 	});
@@ -607,8 +661,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_class__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/class */ "./modules/class.js");
 /* harmony import */ var _modules_forms__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/forms */ "./modules/forms.js");
 /* harmony import */ var _modules_slider__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/slider */ "./modules/slider.js");
+/* harmony import */ var _modules_class_item__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../modules/class-item */ "./modules/class-item.js");
 
 ;
+
 
 
 
@@ -621,10 +677,11 @@ window.addEventListener("DOMContentLoaded", () => {
   ;(0,_modules_loader__WEBPACK_IMPORTED_MODULE_1__["default"])('.loader-wrapper')
   ;(0,_modules_timer__WEBPACK_IMPORTED_MODULE_2__["default"])('2025-11-01', '.timer')
   ;(0,_modules_modal__WEBPACK_IMPORTED_MODULE_3__["default"])('[data-modal]', '.modal', '.modal__content', modalTimerId)
-  ;(0,_modules_class__WEBPACK_IMPORTED_MODULE_4__["default"])('.offers-items')
-  ;(0,_modules_forms__WEBPACK_IMPORTED_MODULE_5__["default"])('form', )
+  ;(0,_modules_class__WEBPACK_IMPORTED_MODULE_4__["default"])('.offers-items',)
+  ;(0,_modules_forms__WEBPACK_IMPORTED_MODULE_5__["default"])('form', modalTimerId)
   ;(0,_modules_slider__WEBPACK_IMPORTED_MODULE_6__["default"])()
-  
+  ;(0,_modules_class_item__WEBPACK_IMPORTED_MODULE_7__["default"])('.daytime-items')
+
  
 });
 

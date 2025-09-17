@@ -1,4 +1,4 @@
-import {closeModel, openModal} from './modal'
+import { closeModel, openModal } from "./modal";
 
 function forms(formSelector, modalTimerId) {
   const form = document.querySelector(formSelector),
@@ -26,30 +26,37 @@ function forms(formSelector, modalTimerId) {
       object[key] = value;
     });
 
-    fetch(`https://api.telegram.org/bot${telegramTokenBot}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: `
-         Name:${object.name}. Phone: ${object.phone} `,
-      }),
-    })
-      .then(() => {
-        showStatusMessage(message.success);
-        form.reset();
-      })
-      .catch(() => {
-        showStatusMessage(message.failure);
-      })
-      .finally(() => loader.remove());
+   sendMessage(loader, object)
   });
+
+  async function sendMessage(loader, object) {
+    try {
+      const response = await fetch(
+        `https://api.tt${telegramTokenBot}/sendMessage`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: `
+         Name:${object.name}. Phone: ${object.phone} `,
+          }),
+        }
+      )
+      showStatusMessage(message.success)
+    } catch {
+     showStatusMessage(message.failure);
+    }finally{
+      loader.remove()
+      form.reset()
+    }
+  }
 
   function showStatusMessage(message) {
     const modalDialog = document.querySelector(".modal__dialog");
 
     modalDialog.classList.add("hide");
-    openModal('.modal__content', '.modal',modalTimerId);
+    openModal(".modal__content", ".modal", modalTimerId);
 
     const statusModal = document.createElement("div");
     statusModal.classList.add("modal__dialog");
@@ -67,7 +74,7 @@ function forms(formSelector, modalTimerId) {
     setTimeout(() => {
       statusModal.remove();
       modalDialog.classList.remove("hide");
-      closeModel('modal');
+      closeModel("modal");
     }, 4000);
   }
 }
